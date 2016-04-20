@@ -1,7 +1,7 @@
 # Space-Invaders-Game-in-MIPS-Assembly-Programming-Language
 
 Download the the MIPS Simulator form Simulator Directory given in the source.
-
+To assemble the code, Drag the asm file to assemble.exe folder. And open the object file from MIPS simulator. 
 
 Phase 1: 
 make alieans of 4 rows of 11 aliens and use the timer. Already finished this phase. (Will send you the code of first phase.use that code. proffesor has given that code.)
