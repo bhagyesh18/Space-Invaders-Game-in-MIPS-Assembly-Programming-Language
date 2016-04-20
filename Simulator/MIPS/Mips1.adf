@@ -1,0 +1,696 @@
+	comment	#
+	label	:
+	equate	=
+	sudo	 .
+d	format	 64
+w	format	32
+h	format	16
+b	format	8
+.align	pseudo	align,1
+.ascii	pseudo	data,b,n,\"
+.asciiz	pseudo	data,b,n,\",0
+.byte	pseudo	data,b,n
+.data	pseudo	section,1,1,0x10010000
+.delay	pseudo	delay,0
+.double	pseudo	data,d,n,e
+.endr	pseudo	repeat,0
+.extern	pseudo	global,label,size
+.global pseudo	global,label,size
+.float	pseudo	data,w,n,e
+.globl	pseudo	external,label
+.external pseudo external,label
+.half	pseudo	data,h,n
+.kdata	pseudo	section,3,1,0xc0000000
+.ktext	pseudo	section,2,1,0x80000000
+.kcode	pseudo	section,2,1,0x80000000
+.repeat	pseudo	repeat,1
+.sdata	pseudo	section,5,1,0x10008000
+.space	pseudo	space,,size
+.struct	pseudo	struct,1
+.text	pseudo	section,0,1,0x00400000
+.code	pseudo	section,0,1,0x00400000
+.word	pseudo	data,w,n
+=	pseudo	equate
+r	format	6,5,5,5,5,6
+i	format	6,5,5,16
+j	format	6,26
+break	format	6,20,6
+PC	define 	0
+NOPC	define	0
+nop	opcode r,0		0	0	0	0	0	0
+sll	opcode r,3,rd,rt,n	0	0	rt	rd	n	0
+srl	opcode r,3,rd,rt,n	0	0	rt	rd	n	2
+sra	opcode r,3,rd,rt,n	0	0	rt	rd	n	3
+sll	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	4
+sllv	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	4
+srlv	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	6
+srl	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	6
+sra	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	7
+srav	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	7
+jr	opcode r,1,rs 		0	rs	0	0	0	8
+jalr	opcode r,2,rd,rs	0	rs	0	rd	0	9
+jalr	opcode r,1,rs		0	rs	0	31	0	9
+syscall	opcode break,0		0       0      				0xc
+syscall	opcode break,1,rcode	0	rcode				0xc
+break	opcode break,1,icode	0	icode				0xd
+break	opcode break,1,rcode	0	rcode				0xd
+break	opcode break,0		0	0				0xd
+mfhi	opcode r,1,rd		0	0	0	rd	0	0x10
+mthi	opcode r,1,rs		0	rs	0	0	0	0x11
+mflo	opcode r,1,rd		0	0	0	rd	0	0x12
+mtlo	opcode r,1,rs		0	rs	0	0	0	0x13
+mult	opcode r,2,rs,rt	0	rs	rt	0	0	0x18
+multu	opcode r,2,rs,rt	0	rs	rt	0	0	0x19
+div	opcode r,2,rs,rt	0	rs	rt	0	0	0x1a
+divu	opcode r,2,rs,rt	0	rs	rt	0	0	0x1b
+add	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x20
+move	opcode r,2,rd,rs	0       rs	0	rd	0	0x21
+mov	opcode r,2,rd,rs	0       rs	0	rd	0	0x21
+addu	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x21
+sub	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x22
+neg	opcode r,2,rd,rt	0	0	rt	rd	0	0x22
+subu	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x23
+negu	opcode r,2,rd,rt	0	0	rt	rd	0	0x23
+and	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x24
+or	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x25
+xor	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x26
+nor	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x27
+not	opcode r,2,rd,rs	0       rs      0       rd      0       0x27
+slt	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x2a
+sgt	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	0x2a
+sltu	opcode r,3,rd,rs,rt	0	rs	rt	rd	0	0x2b
+sgtu	opcode r,3,rd,rt,rs	0	rs	rt	rd	0	0x2b
+bltz	opcode i,2,rs,label	1	rs	0	label-PC
+bgez	opcode i,2,rs,label	1	rs	1	label-PC
+b	opcode i,1,label	1	0	1	label-PC
+bltzal	opcode i,2,rs,label	1	rs	0x10	label-PC
+bgezal	opcode i,2,rs,label	1	rs	0x11	label-PC
+j	opcode j,1,label	2	label-NOPC
+jal	opcode j,1,label	3	label-NOPC
+beq	opcode i,3,rs,rt,label	4	rs	rt	label-PC
+beqz	opcode i,2,rs,label	4	rs	0	label-PC
+bne	opcode i,3,rs,rt,label	5	rs	rt	label-PC
+bnez	opcode i,2,rs,label	5	rs	0	label-PC
+blez	opcode i,2,rs,label	6	rs	0	label-PC
+bgtz	opcode i,2,rs,label	7	rs	0	label-PC
+addi	opcode i,3,rt,rs,imm	8	rs	rt	imm
+add	opcode i,3,rt,rs,imm	8	rs	rt	imm
+addiu	opcode i,3,rt,rs,imm	9	rs	rt	imm
+addu	opcode i,3,rt,rs,imm	9	rs	rt	imm
+slti	opcode i,3,rt,rs,imm	0xA	rs	rt	imm
+sltiu	opcode i,3,rt,rs,imm	0xB	rs	rt	imm
+andi	opcode i,3,rt,rs,imm	0xC	rs	rt	imm
+ori	opcode i,3,rt,rs,imm	0xD	rs	rt	imm
+xori	opcode i,3,rt,rs,imm	0xE	rs	rt	imm
+lui	opcode i,2,rt,imm	0xF	0	rt	imm
+mfc0	opcode r,2,rt,rd	0x10    0       rt      rd      0       0
+cfc0	opcode r,2,rt,rd	0x10    2       rt      rd      0       0
+mtc0	opcode r,2,rd,rt	0x10    4       rt      rd      0       0
+ctc0	opcode r,2,rd,rt	0x10    6       rt      rd      0       0
+bc0f	opcode i,1,label	0x10    8       0       label-PC
+bc0t	opcode i,1,label	0x10    8       1       label-PC
+tlbr	opcode r,0		0x10    0x10    0	0	0       1
+tlbwi	opcode r,0		0x10    0x10    0	0	0       2
+tlbwr	opcode r,0		0x10    0x10    0	0	0	6
+tlbp	opcode r,0		0x10    0x10    0	0	0       8
+rfe	opcode r,0		0x10    0x10    0       0       0       0x10
+lb	opcode i,3,rt,imm(rs)	0x20    rs      rt      imm
+lh	opcode i,3,rt,imm(rs)	0x21    rs      rt      imm
+lwl	opcode i,3,rt,imm(rs)	0x22    rs      rt      imm
+lw	opcode i,3,rt,imm(rs)	0x23	rs	rt	imm
+lbu	opcode i,3,rt,imm(rs)	0x24    rs      rt      imm
+lhu	opcode i,3,rt,imm(rs)	0x25    rs      rt      imm
+lwr	opcode i,3,rt,imm(rs)	0x26    rs      rt      imm
+sb	opcode i,3,rt,imm(rs)	0x28    rs      rt      imm
+sh	opcode i,3,rt,imm(rs)	0x29    rs      rt      imm
+swl	opcode i,3,rt,imm(rs)	0x2a    rs      rt      imm
+sw	opcode i,3,rt,imm(rs)	0x2B	rs	rt	imm
+swr	opcode i,3,rt,imm(rs)	0x2e    rs      rt      imm
+ll	opcode i,3,rt,imm(rs)	0x30    rs      rt      imm
+lwc1	opcode i,3,rt,imm(rs)	0x31    rs      rt      imm
+l.s	opcode i,3,rt,imm(rs)	0x31    rs      rt      imm
+lwc2	opcode i,3,rt,imm(rs)	0x32    rs      rt      imm
+lwc3	opcode i,3,rt,imm(rs)	0x33    rs      rt      imm
+sc	opcode i,3,rt,imm(rs)	0x38    rs      rt      imm
+swc1	opcode i,3,rt,imm(rs)	0x39    rs      rt      imm
+s.s	opcode i,3,rt,imm(rs)	0x39    rs      rt      imm
+swc2	opcode i,3,rt,imm(rs)	0x3a    rs      rt      imm
+swc3	opcode i,3,rt,imm(rs)	0x3b    rs      rt      imm
+mfc1	opcode r,2,rt,rd	0x11    0       rt      rd      0       0
+cfc1	opcode r,2,rt,rd	0x11    2       rt      rd      0       0
+mtc1	opcode r,2,rt,rd	0x11    4       rt      rd      0       0
+ctc1	opcode r,2,rt,rd	0x11    6       rt      rd      0       0
+bc1f	opcode i,1,label	0x11    8       0       label-PC
+bc1t	opcode i,1,label	0x11    8       1       label-PC
+add.s	opcode r,3,rd,rs,rt	0x11    0x10    rt      rs      rd      0
+add.d	opcode r,3,rd,rs,rt	0x11    0x11    rt      rs      rd      0
+sub.s	opcode r,3,rd,rs,rt	0x11    0x10    rt      rs      rd      1
+sub.d	opcode r,3,rd,rs,rt	0x11    0x11    rt      rs      rd      1
+mul.s	opcode r,3,rd,rs,rt	0x11    0x10    rt      rs      rd      2
+mul.d	opcode r,3,rd,rs,rt	0x11    0x11    rt      rs      rd      2
+div.s	opcode r,3,rd,rs,rt	0x11    0x10    rt      rs      rd      3
+div.d	opcode r,3,rd,rs,rt	0x11    0x11    rt      rs      rd      3
+abs.s	opcode r,2,rd,rs	0x11    0x10    0       rs      rd      5
+abs.d	opcode r,2,rd,rs	0x11    0x11    0       rs      rd      5
+mov.s	opcode r,2,rd,rs	0x11    0x10    0       rs      rd      6
+mov.d	opcode r,2,rd,rs	0x11    0x11    0       rs      rd      6
+neg.s	opcode r,2,rd,rs	0x11    0x10    0       rs      rd      7
+neg.d	opcode r,2,rd,rs	0x11    0x11    0       rs      rd      7
+cvt.s.w	opcode r,2,rd,rs	0x11    0x14    0       rs      rd      0x20
+cvt.s.d	opcode r,2,rd,rs	0x11    0x11    0       rs      rd      0x20
+cvt.d.w	opcode r,2,rd,rs	0x11    0x14    0       rs      rd      0x21
+cvt.d.s	opcode r,2,rd,rs	0x11    0x10    0       rs      rd      0x21
+cvt.w.s	opcode r,2,rd,rs	0x11    0x10    0       rs      rd      0x24
+cvt.w.d	opcode r,2,rd,rs	0x11    0x11    0       rs      rd      0x24
+c.f.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x30
+c.f.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x30
+c.un.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x31
+c.un.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x31
+c.eq.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x32
+c.eq.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x32
+c.ueq.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x33
+c.ueq.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x33
+c.olt.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x34
+c.olt.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x34
+c.ult.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x35
+c.ult.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x35
+c.ole.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x36
+c.ole.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x36
+c.ule.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x37
+c.ule.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x37
+c.sf.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x38
+c.sf.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x38
+c.ngle.s opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x39
+c.ngle.d opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x39
+c.seq.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x3a
+c.seq.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x3a
+c.ngl.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x3b
+c.ngl.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x3b
+c.lt.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x3c
+c.lt.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x3c
+c.nge.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x3d
+c.nge.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x3d
+c.le.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x3e
+c.le.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x3e
+c.ngt.s	opcode r,2,rs,rt	0x11    0x10    rt      rs      0       0x3f
+c.ngt.d	opcode r,2,rs,rt	0x11    0x11    rt      rs      0       0x3f
+la	macro	rd,laddress
+	lui	rd,laddress>>16
+	ori	rd,laddress&0xffff
+	endmacro
+li	macro	rd,imm
+	lui	rd,imm&0>>16
+	ori	rd,imm&0xffff
+	endmacro
+l.s	macro	rd,laddress
+	la	$at,laddress
+	lwc1	rd,($at)
+	endmacro
+l.d	macro	rd,laddress
+	lui	$at,laddress&0x8000<<1+laddress>>16
+	lwc1	rd,laddress&0xFFFF($at)
+	lwc1	rd+1,laddress&0xFFFF+4($at)
+	endmacro
+l.d	macro	rd,imm(rs)
+	lwc1	rd,imm(rs)
+	lwc1	rd+1,imm+4(rs)
+	endmacro
+s.s	macro	rd,laddress
+	la	$at,laddress
+	swc1	rd,($at)
+	endmacro
+s.d	macro	rd,laddress
+	lui	$at,laddress&0x8000<<1+laddress>>16
+	swc1	rd,laddress&0xFFFF($at)
+	swc1	rd+1,laddress&0xFFFF+4($at)
+	endmacro
+s.d	macro	rd,imm(rs)
+	swc1	rd,imm(rs)
+	swc1	rd+1,imm+4(rs)
+	endmacro
+abs	macro	rd,rs
+	addu	rd,$0,rs
+	bgez	rs,09f
+	sub	rd,$0,rs
+09:
+	endmacro
+bge	macro	rs,rt,label
+	slt	$at,rs,rt
+	beq	$at,$0,label
+	endmacro
+bge	macro	rs,imm,label
+	li	$at,imm
+	slt	$at,rs,$at
+	beq	$at,$0,label
+	endmacro
+bgeu	macro	rs,rt,label
+	sltu	$at,rs,rt
+	beq	$at,$0,label
+	endmacro
+bgeu	macro	rs,imm,label
+	li	$at,imm
+	sltu	$at,rs,$at
+	beq	$at,$0,label
+	endmacro
+bgt	macro	rs,rt,label
+	slt	$at,rt,rs
+	bne	$at,$0,label
+	endmacro
+bgt	macro	rs,imm,label
+	li	$at,imm
+	slt	$at,$at,rs
+	bne	$at,$0,label
+	endmacro
+bgtu	macro	rs,rt,label
+	sltu	$at,rt,rs
+	bne	$at,$0,label
+	endmacro
+bgtu	macro	rs,imm,label
+	li	$at,imm
+	sltu	$at,$at,rs
+	bne	$at,$0,label
+	endmacro
+ble	macro	rs,rt,label
+	slt	$at,rt,rs
+	beq	$at,$0,label
+	endmacro
+ble	macro	rs,imm,label
+	li	$at,imm
+	slt	$at,$at,rs
+	beq	$at,$0,label
+	endmacro
+bleu	macro	rs,rt,label
+	sltu	$at,rt,rs
+	beq	$at,$0,label
+	endmacro
+bleu	macro	rs,imm,label
+	li	$at,imm
+	sltu	$at,$at,rs
+	beq	$at,$0,label
+	endmacro
+blt	macro	rs,rt,label
+	slt	$at,rs,rt
+	bne	$at,$0,label
+	endmacro
+blt	macro	rs,imm,label
+	li	$at,imm
+	slt	$at,rs,$at
+	bne	$at,$0,label
+	endmacro
+bltu	macro	rs,rt,label
+	sltu	$at,rs,rt
+	bne	$at,$0,label
+	endmacro
+bltu	macro	rs,imm,label
+	li	$at,imm
+	sltu	$at,rs,$at
+	bne	$at,$0,label
+	endmacro
+bne	macro	rs,imm,label
+	li	$at,imm
+	bne	rs,$at,label
+	endmacro
+beq	macro	rs,imm,label
+	li	$at,imm
+	beq	rs,$at,label
+	endmacro
+div	macro	rd,rs,rt
+	bne	rt,$0,08f
+	break	
+08:	div	rs,rt
+	mflo	rd
+	endmacro
+div	macro	rd,rs,n
+	li	$at,n
+	div	rs,$at
+	mflo	rd
+	endmacro
+div	macro	rd,n
+	li	$at,n
+	div	rd,$at
+	mflo	rd
+	endmacro
+divu	macro	rd,rs,rt
+	bne	rt,$0,08f
+	break	
+08:	divu	rs,rt
+	mflo	rd
+	endmacro
+divu	macro	rd,rs,n
+	li	$at,n
+	divu	rs,$at
+	mflo	rd
+	endmacro
+divu	macro	rd,n
+	li	$at,n
+	divu	rd,$at
+	mflo	rd
+	endmacro
+mul	macro	rd,rs,rt
+	mult	rs,rt
+	mflo	rd
+	endmacro
+mul	macro	rd,rs,n
+	li	$at,n
+	mult	rs,$at
+	mflo	rd
+	endmacro
+mul	macro	rd,n
+	li	$at,n
+	mult	rd,$at
+	mflo	rd
+	endmacro
+mulu	macro	rd,rs,rt
+	multu	rs,rt
+	mflo	rd
+	endmacro
+mulu	macro	rd,rs,n
+	li	$at,n
+	multu	rs,$at
+	mflo	rd
+	endmacro
+mulu	macro	rd,n
+	li	$at,n
+	multu	rd,$at
+	mflo	rd
+	endmacro
+mulo	macro	rd,rs,rt
+	mult	rs,rt
+	mfhi	$at
+	mflo	rd
+	sra	rd,rd,31
+	beq	$at,rd,08f
+	break	
+08:	mflo	rd
+	endmacro
+mulou	macro	rd,rs,rt
+	multu	rs,rt
+	mfhi	$at
+	beq	$at,$0,08f
+	break	
+08:	mflo	rd
+	endmacro
+rem	macro	rd,rs,rt
+	bne	rt,$0,08f
+	break	
+08:	div	rs,rt
+	mfhi	rd
+	endmacro
+rem	macro	rd,rs,n
+	li	$at,n
+	div	rs,$at
+	mfhi	rd
+	endmacro
+rem	macro	rd,n
+	li	$at,n
+	div	rd,$at
+	mfhi	rd
+	endmacro	
+remu	macro	rd,rs,rt
+	bne	rt,$0,08f
+	break	
+08:	divu	rs,rt
+	mfhi	rd
+	endmacro
+remu	macro	rd,rs,n
+	li	$at,n
+	divu	rs,$at
+	mfhi	rd
+	endmacro
+remu	macro	rd,n
+	li	$at,n
+	divu	rd,$at
+	mfhi	rd
+	endmacro		
+rol	macro	rd,rt,rs
+	subu	$at,$0,rs
+	srlv	$at,rt,$at
+	sllv	rd,rt,rs
+	or	rd,rd,$at
+	endmacro
+ror	macro	rd,rt,rs
+	subu	$at,$0,rs
+	sllv	$at,rt,$at
+	srlv	rd,rt,rs
+	or	rd,rd,$at
+	endmacro
+rol	macro	rd,rt,n
+	srl	$at,rt,-n
+	sll	rd,rt,n
+	or	rd,rd,$at
+	endmacro
+ror	macro	rd,rt,n
+	sll	$at,rt,-n
+	srl	rd,rt,n
+	or	rd,rd,$at
+	endmacro
+seq	macro	rd,rs,rt
+	subu	$at,rs,rt
+	addiu	rd,$0,1
+	sltu	rd,$at,rd
+	endmacro
+sge	macro	rd,rs,rt
+	slt	rd,rs,rt
+	slti	rd,rd,1
+	endmacro
+sgeu	macro	rd,rs,rt
+	sltu	rd,rs,rt
+	slti	rd,rd,1
+	endmacro
+sle	macro	rd,rs,rt
+	slt	rd,rt,rs
+	slti	rd,rd,1
+	endmacro
+sleu	macro	rd,rs,rt
+	sltu	rd,rt,rs
+	slti	rd,rd,1
+	endmacro
+sne	macro	rd,rs,rt
+	subu	$at,rs,rt
+	sltu	rd,$0,$at
+	endmacro
+ulh	macro	rt,imm(rs)
+	lb	rt,imm+1(rs)
+	lbu	$at,imm(rs)
+	sll	rt,rt,8
+	or	rt,rt,$at
+	endmacro
+ulhu	macro	rt,imm(rs)
+	lbu	rt,imm+1(rs)
+	lbu	$at,imm(rs)
+	sll	rt,rt,8
+	or	rt,rt,$at
+	endmacro
+ulw	macro	rt,imm(rs)
+	lwl	rt,imm+3(rs)
+	lwr	rt,imm(rs)
+	endmacro
+ush	macro	rt,imm(rs)
+	sb	rt,imm(rs)
+	srl	$at,rt,8
+	sb	$at,imm+1(rs)
+	endmacro
+usw	macro	rt,imm(rs)
+	swl	rt,imm+3(rs)
+	swr	rt,imm(rs)
+	endmacro
+subu	macro	rt,imm
+	addiu	rt,rt,-imm
+	endmacro
+subu	macro	rt,rs,imm
+	addiu	rt,rs,-imm
+	endmacro
+sub	macro	rt,rs,imm
+	addi	rt,rs,-imm
+	endmacro
+sub	macro	rt,imm
+	addi	rt,rt,-imm
+	endmacro
+ori	macro	rt,imm
+	ori	rt,rt,imm
+	endmacro
+andi	macro	rt,imm
+	andi	rt,rt,imm
+	endmacro
+xori	macro	rt,imm
+	xori	rt,rt,imm
+	endmacro
+addi	macro	rt,imm
+	addi	rt,rt,imm
+	endmacro
+addiu	macro	rt,imm
+	addiu	rt,rt,imm
+	endmacro
+
+	delayslot 1
+
+abs	macro	rd,rs
+	bgez	rs,09f
+	addu	rd,$0,rs
+	sub	rd,$0,rs
+09:
+	endmacro
+div	macro	rd,rs,rt
+	bne	rt,$0,08f
+	nop
+	break	
+08:	div	rs,rt
+	mflo	rd
+	endmacro
+divu	macro	rd,rs,rt
+	bne	rt,$0,08f
+	nop
+	break	
+08:	divu	rs,rt
+	mflo	rd
+	endmacro
+mulo	macro	rd,rs,rt
+	mult	rs,rt
+	mfhi	$at
+	mflo	rd
+	sra	rd,rd,31
+	beq	$at,rd,08f
+	mflo	rd
+	break
+08:	
+	endmacro
+mulou	macro	rd,rs,rt
+	multu	rs,rt
+	mfhi	$at
+	beq	$at,$0,08f
+	mflo	rd
+	break	
+08:	
+	endmacro
+rem	macro	rd,rs,rt
+	bne	rt,$0,08f
+	nop
+	break	
+08:	div	rs,rt
+	mfhi	rd
+	endmacro
+remu	macro	rd,rs,rt
+	bne	rt,$0,08f
+	nop
+	break	
+08:	divu	rs,rt
+	mfhi	rd
+	endmacro
+$0      define 0
+$zero   define 0
+$at     define 1
+$v0     define 2
+$v1     define 3
+$a0     define 4
+$a1     define 5
+$a2     define 6
+$a3     define 7
+$t0     define 8
+$t1     define 9
+$t2     define 10
+$t3     define 11
+$t4     define 12
+$t5     define 13
+$t6     define 14
+$t7     define 15
+$s0     define 16
+$s1     define 17
+$s2     define 18
+$s3     define 19
+$s4     define 20
+$s5     define 21
+$s6     define 22
+$s7     define 23
+$t8     define 24
+$t9     define 25
+$k0     define 26
+$k1     define 27
+$gp     define 28
+$sp     define 29
+$fp     define 30
+$ra     define 31
+$f0     define 0
+$f1     define 1
+$f2     define 2
+$f3     define 3
+$f4     define 4
+$f5     define 5
+$f6     define 6
+$f7     define 7
+$f8     define 8
+$f9     define 9
+$f10    define 10
+$f11    define 11
+$f12    define 12
+$f13    define 13
+$f14    define 14
+$f15    define 15
+$f16    define 16
+$f17    define 17
+$f18    define 18
+$f19    define 19
+$f20    define 20
+$f21    define 21
+$f22    define 22
+$f23    define 23
+$f24    define 24
+$f25    define 25
+$f26    define 26
+$f27    define 27
+$f28    define 28
+$f29    define 29
+$f30    define 30
+$f31    define 31
+$INDEX		define 0
+$RANDOM		define 1
+$ENTRY_LO	define 2
+$ENTRY_LO1	define 3
+$CONTEXT	define 4
+$PAGEMASK	define 5
+$WIRED		define 6
+$ERROR		define 7
+$BAD_V_ADDR	define 8
+$COUNT		define 9
+$ENTRY_HI	define 10
+$COMPARE	define 11
+$STATUS		define 12
+$CAUSE		define 13
+$EPC		define 14
+$PRID		define 15
+$CONFIG		define 16
+$LLADDR		define 17
+$WATCH_LO	define 18
+$WATCH_HI	define 19
+$ECC		define 26
+$CACHE_ERR	define 27
+$TAG_LO		define 28
+$TAG_HI		define 29
+$ERROR_EPC	define 30
+$print_int   	define 1
+$print_float 	define 2
+$print_double	define 3
+$print_string	define 4
+$read_int    	define 5
+$read_float	define 6
+$read_double	define 7
+$read_string	define 8
+$malloc      	define 9
+$exit	        define 10
+$print_char	define 11
+$read_char	define 12
+$open		define 13
+$read        	define 14
+$write		define 15
+$close		define 16
+$exit2		define 17
+$free		define 18
+$position	define 19
+$xy		define 20
+$open_cons	define 21
+$select_cons	define 22
+$close_cons	define 23
+$callback	define 24
+$IO_read	define 25
+$IO_write	define 26
+$random         define 27
+

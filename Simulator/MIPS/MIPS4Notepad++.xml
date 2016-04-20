@@ -1,0 +1,36 @@
+<NotepadPlus>
+    <UserLang name="MIPSasm" ext="asm">
+        <Settings>
+            <Global caseIgnored="no" escapeChar="\" />
+            <TreatAsSymbol comment="no" commentLine="yes" />
+            <Prefix words1="no" words2="no" words3="no" words4="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Delimiters">&quot;00&quot;00</Keywords>
+            <Keywords name="Folder+">#begin</Keywords>
+            <Keywords name="Folder-">#end</Keywords>
+            <Keywords name="Operators">&apos; - &amp; ( ) * , / : | + &lt; &gt;</Keywords>
+            <Keywords name="Comment">1 2 0#</Keywords>
+            <Keywords name="Words1">add addi addiu addu and andi beq bne bgez bgezal bgtz blez bltz bltzal break div divu j jal jalr jr lb lbu lh lhu lui lw lwl lwr mfc0 mfc1 mfhi mflo mtc0 mtc1 mthi mtlo mult multu nor or ori rfe slt slti sltiu sltu sll sllv sra srav srl srlv sb sh sw swl swr sub subu syscall xor xori abs.d abs.s add.d add.s bc1t bc1f c.eq.d c.eq.s c.lt.d c.lt.s cvt.d.s cvt.d.w cvt.s.d cvt.s.w cvt.w.d cvt.w.s div.d div.s lwc1 mov.d mov.s mfc1 mtc1 mul.d mul.s neg.d neg.s swc1 sub.d sub.s</Keywords>
+            <Keywords name="Words2">abs b beqz bge bgeu bgt bgtu ble bleu blt bltu bnez la li mov move mul mulo mulou neg negu nop not rem remu rol ror seq sge sgeu sgt sgtu sle sleu sne ulh ulw ush usw l.d l.s mdc1.d s.d s.s</Keywords>
+            <Keywords name="Words3">$0 $a0 $a1 $a2 $a3 $at $fp $gp $k0 $k1 $ra $s0 $s1 $s2 $s3 $s4 $s5 $s6 $s7 $s8 $sp $t0 $t1 $t2 $t3 $t4 $t5 $t6 $t7 $t8 $t9 $v0 $v1 $zero $callback $close $close_cons $exit $exit2 $free $IO_read $IO_write $malloc $open $open_cons $position $print_char $print_double $print_float $print_int $print_string $random $read_char $read $read_double $read_float $read_int $read_string $select_cons $write $xy</Keywords>
+            <Keywords name="Words4">.align .ascii .asciiz .byte .code .data .delay .double .extern .float .globl .half .kcode .kdata .space .struct .text .word</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" styleID="11" fgColor="800040" bgColor="FFFFFF" fontName="Terminal" fontStyle="0" fontSize="11" />
+            <WordsStyle name="FOLDEROPEN" styleID="12" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" />
+            <WordsStyle name="FOLDERCLOSE" styleID="13" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" />
+            <WordsStyle name="KEYWORD1" styleID="5" fgColor="0000FF" bgColor="FFFFFF" fontName="Arial Black" fontStyle="0" fontSize="10" />
+            <WordsStyle name="KEYWORD2" styleID="6" fgColor="008000" bgColor="FFFFFF" fontName="Arial Black" fontStyle="0" fontSize="10" />
+            <WordsStyle name="KEYWORD3" styleID="7" fgColor="FF0000" bgColor="FFFFFF" fontName="Terminal" fontStyle="0" fontSize="10" />
+            <WordsStyle name="KEYWORD4" styleID="8" fgColor="FF00FF" bgColor="FFFFFF" fontName="" fontStyle="1" />
+            <WordsStyle name="COMMENT" styleID="1" fgColor="00FFFF" bgColor="FFFFFF" fontName="" fontStyle="0" />
+            <WordsStyle name="COMMENT LINE" styleID="2" fgColor="008040" bgColor="FFFFFF" fontName="Terminal" fontStyle="0" fontSize="10" />
+            <WordsStyle name="NUMBER" styleID="4" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" />
+            <WordsStyle name="OPERATOR" styleID="10" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="0" />
+            <WordsStyle name="DELIMINER1" styleID="14" fgColor="0000FF" bgColor="FFFFFF" fontName="Terminal" fontStyle="0" fontSize="10" />
+            <WordsStyle name="DELIMINER2" styleID="15" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" />
+            <WordsStyle name="DELIMINER3" styleID="16" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" />
+        </Styles>
+    </UserLang>
+</NotepadPlus>

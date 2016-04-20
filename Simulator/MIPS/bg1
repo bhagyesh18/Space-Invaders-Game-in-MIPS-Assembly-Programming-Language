@@ -1,0 +1,290 @@
+# Assembly Language Project - "Space Invaders" Fall 2015 CSUEB -R. Doering
+# Code for Project 1 turn in released to students 11/18/15 1:45pm
+	.data
+linesize = 81	
+screen:	.space	linesize*25
+# note that this screen image will need to use unaligned memory operations for words.
+#begin fp constants
+fp.ra   = 4
+fp.a0   = 8
+fp.a1   = 12
+fp.a2   = 16
+fp.a3   = 20
+fp.s0   = -4
+fp.s1	= -8
+fp.s2	= -12
+fp.s3	= -16
+fp.s4	= -20
+fp.s5	= -24
+fp.s6	= -28
+fp.s7	= -32
+#end fp constants
+#begin aliens	
+ALIEN_COLS = 11
+ALIEN_ROWS = 4				# these define the size of the battalion 
+	.align 2
+alien1: .ascii 	"ÜÛÛÜ"			# two frames of animation for each alien
+	.ascii	"Ý±±Þ"
+	.ascii  "/||\\"
+af2:	.ascii	"ÝÛÛÞ"
+	.ascii	"ß±±ß"
+	.ascii  "|\\/|"
+# 	
+alien2: .byte 32,30,30,32    
+	.byte 213,2,2,184
+	.byte 201,202,202,187
+	.byte 32,30,30,32
+	.byte 212,2,2,190
+	.byte 200,206,206,188
+exploded:
+	.ascii	"\\³³/"
+	.ascii  "ÄùùÄ"
+	.ascii	"/³³\\"
+#end aliens
+#begin DrawAliens
+#static variables:
+	.extern	animate,1
+#global variables:	
+	.extern row,1	# uppper left corner on screen
+	.extern col,1
+	.extern dir,1
+	.code
+DrawAliens:		#void DrawAliens()
+	addi	$sp,$sp,-36
+	sw	$fp,24($sp)
+	addi	$fp,$sp,24
+	sw	$ra,fp.ra($fp)
+	sw	$s0,fp.s0($fp)
+	sw	$s1,fp.s1($fp)
+	sw	$s2,fp.s2($fp)
+	sw	$s3,fp.s3($fp)
+	sw	$s4,fp.s4($fp)
+	sw	$s5,fp.s5($fp)
+	
+	lb	$s1,animate($gp)
+	xori	$s1,$s1,af2-alien1
+	sb	$s1,animate($gp)	
+	lb	$a0,col($gp)
+	lb	$a1,row($gp)
+	jal	ScreenPointer
+	mov	$s0,$v0
+	mov	$a1,$v0
+	la	$a0,alien1
+	add	$a0,$a0,$s1	# add animation offset
+	addi	$s2,$0,ALIEN_ROWS
+	addi	$s5,$gp,aliens
+1:	lh	$s3,leftmost($gp)
+	lh	$s4,($s5)
+2:	and	$t0,$s3,$s4
+	beqz	$t0,3f
+	jal	PlaceAlien
+3:	addi	$a1,$a1,5		#width of an alien
+	lh	$t0,rightmost($gp)
+	beq	$t0,$s3,4f
+	srl	$s3,$s3,1
+	b	2b
+4:	addi	$s2,$s2,-1
+	add	$s5,$s5,2		# move to next row of aliens
+	bne	$s2,2,5f
+	addi	$a0,$a0,alien2-alien1
+5:	addi	$s0,$s0,linesize*4
+	mov	$a1,$s0
+	bgtz	$s2,1b
+	
+	lw	$ra,fp.ra($fp)
+	lw	$s0,fp.s0($fp)
+	lw	$s1,fp.s1($fp)
+	lw	$s2,fp.s2($fp)
+	lw	$s3,fp.s3($fp)
+	lw	$s4,fp.s4($fp)
+	lw	$s5,fp.s5($fp)
+	lw	$fp,($fp)
+	addi	$sp,$sp,36
+	jr	$ra
+#end DrawAliens
+#begin ScreenPointer
+ScreenPointer:
+	sll	$t0,$a1,6		# row*81
+	sll	$t1,$a1,4		
+	add	$v0,$t0,$t1
+	add	$v0,$a1,$v0
+	li	$t0,screen	# + base address
+	add	$v0,$v0,$t0
+	add	$v0,$v0,$a0	# +col
+	jr	$ra	
+#end ScreenPointer
+#begin MoveAliens
+MoveAliens:
+	lb	$t0,col($gp)
+	lb	$t1,cols($gp)
+	sll	$t2,$t1,2
+	add	$t2,$t2,$t1
+	lb	$t3,dir($gp)
+	add	$t0,$t0,$t3
+	add	$t2,$t2,$t0
+	bltz	$t0,2f
+lz1	=	linesize+1	
+	bne	$t2,lz1,3f	
+2:	sub	$t0,$t0,$t3	#put it back!	
+	lb	$t4,row($gp)
+	addi    $t4,$t4,1
+	sb	$t4,row($gp)
+	sub	$t3,$0,$t3		#change direction for next time.
+	sb	$t3,dir($gp)
+	lb	$t5,rows($gp)
+	sll	$t5,$t5,2		#each row is 4 characters tall
+	add	$t5,$t5,$t4	
+	beq	$t5,26,main	#todo: landing ends game!
+3:	sb	$t0,col($gp)
+	jr	$ra		
+#end MoveAliens
+#begin ClearScreen	
+	.code
+ClearScreen:
+	la	$t0,screen
+	addi	$t2,$0,25		# loop counter for rows
+	li	$t3,0x20202020	# quad space character
+	addi	$t4,$0,'\n
+1:	
+	addi	$t1,$0,4 		#loop counter for columns
+2:	usw	$t3,0($t0)
+	usw	$t3,4($t0)
+	usw	$t3,8($t0)
+	usw	$t3,12($t0)
+	usw	$t3,16($t0)
+	addi	$t0,$t0,20		
+	addi	$t1,$t1,-1 
+	bgtz	$t1,2b
+	sb	$t4,($t0)		# new line at last of each line
+	addi	$t0,$t0,1
+	addi	$t2,$t2,-1
+	bgtz	$t2,1b
+	sb	$0,-1($t0)
+	jr	$ra
+#end clear screen	
+#begin PlaceAlien
+PlaceAlien:
+# a0: pointer to alien, a1 pointer into screen buffer.
+	lw	$t0,($a0)
+	lw	$t1,4($a0)
+	lw	$t2,8($a0)
+	usw	$t0,($a1)
+	usw	$t1,linesize($a1)
+	usw	$t2,linesize*2($a1)
+	jr	$ra
+#end PlaceAlien
+#begin main
+	.globl	main
+main:	
+	li	$t0,0x97 # 1<<ALIEN_COLS-1	#full row of aliens
+	sh	$t0,aliens($gp)
+	sh	$t0,aliens+2($gp)
+	sh	$t0,aliens+4($gp)
+	sh 	$t0,aliens+6($gp)
+	addi	$t0,$0,1
+	sb	$t0,dir($gp)
+	sb	$0,row($gp)
+	jal	FindBounds
+	la	$a0,timer.t1
+	addi	$a1,$0,4
+tinit	=	ALIEN_ROWS*ALIEN_COLS*17
+	li	$a2,tinit
+	syscall	$IO_write
+1:	jal	ClearScreen
+	jal	MoveAliens
+	jal	DrawAliens
+	mov	$a0,$0
+	mov	$a1,$0
+	syscall	$xy
+	la	$a0,screen
+	syscall	$print_string
+	la	$a0,timer.flags
+	addi	$a1,$0,1
+3:	syscall	$IO_read
+	andi	$t0,$v0,2
+	beqz	$t0,3b
+	addi	$a0,$a0,4
+	syscall	$IO_read
+	b	1b	
+	syscall	$exit
+#end main
+#begin bounds
+	.data
+	.extern	aliens,8		# 4 bitsets. each row of aliens
+	.extern leftmost,2		# bitmask for position of leftmost alien
+	.extern rightmost,2		# bitmask for position of rightmost alien
+	.extern	cols,1			# columns of aliens remaining
+	.extern	rows,1			# rows of aliens remaining
+	.code
+FindBounds:				#void FindBounds()
+	lh	$t0,aliens($gp) 	#{
+	lh	$t1,aliens+2($gp)	#    short merged;
+	lh	$t2,aliens+4($gp)
+	or	$t0,$t0,$t1		#    merged = aliens[0]|aliens[1]|aliens[2]|aliens[3];
+	lh	$t1,aliens+6($gp)
+	or	$t0,$t0,$t2
+	or	$t0,$t0,$t1
+	bnez	$t0,1f			#    if (!merged){
+	sb	$0,cols($gp)		#	cols = rows = 0;
+	sb	$0,rows($gp)		#	return;
+	jr	$ra			#    }
+ACM1	= ALIEN_COLS-1	
+1:	addi	$t1,$0,1<<ACM1		#	leftmost = 1<<(ALIEN_COLS-1);
+	b	3f			#	while (!(merged & leftmost)) 
+2:	srl	$t1,$t1,1		#	    leftmost >>= 1;
+3:	and	$t2,$t1,$t0
+	beqz	$t2,2b
+	sh	$t1,leftmost($gp)	
+	addi	$t3,$0,1		#	rightmost = 1;
+	b	3f			#	while (!(merged & rightmost))
+2:	sll	$t3,$t3,1		#	    rightmost <<= 1;	
+3:	and	$t2,$t3,$t0		
+	beqz	$t2,2b 			
+	sh 	$t3,rightmost($gp)
+	addi	$t0,$0,1			#	cols = 1;
+					#	unsigned short temp = rightmost;
+	b	3f			#	while (!(temp & leftmost)) 
+2:	sll	$t3,$t3,1		#	    {temp <<= 1; cols++;}
+	addi	$t0,$t0,1
+3:	and	$t2,$t3,$t1		
+	beqz	$t2,2b
+	sb	$t0,cols($gp)		
+	addi	$t0,$0,ALIEN_ROWS		#	rows = ALIEN_ROWS ;
+	addi	$t1,$gp,ALIEN_ROWS-1<<1+aliens	# unsigned short ptr = & aliens[ALIEN_ROWS-1]
+	b	3f			#	while (rows >= 0 && !*aliens--]) rows--;
+2:	addi	$t0,$t0,-1		
+3:	bltz	$t0,4f
+	lh	$t2,($t1)
+	addi	$t1,$t1,-2
+	beqz	$t2,2b
+4:	sb	$t0,rows($gp)		#
+	jr	$ra			#}
+#end bounds					
+#begin IO hardware----------------------------------------------------------------------------
+keyboard:	.struct 0xa0000000	#start from hardware base address
+flags:		.byte 0
+mask:		.byte 0
+		.half 0
+keypress: 	.byte 0,0,0
+presscon: 	.byte 0
+keydown:	.half 0
+shiftdown:	.byte 0
+downcon:	.byte 0
+keyup:		.half 0
+upshift:	.byte 0
+upcon:		.byte 0
+#----------------------------------------------------------------------------
+		.data
+timer:		.struct 0xA0000050	
+flags:		.byte 0
+mask:		.byte 0
+		.half 0
+t1:		.word 0
+t2:		.word 0
+t3:		.word 0
+t4:		.word 0
+t5:		.word 0
+t6:		.word 0
+t7:		.word 0
+	.code
+#end IO hardware
